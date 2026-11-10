@@ -403,6 +403,31 @@ html.lenis,html.lenis body{height:auto}
 @media(max-width:700px){.co__steps{display:none}}
 .co__g{display:grid;gap:clamp(24px,4vw,56px);padding-top:clamp(28px,4vw,56px);padding-bottom:80px;align-items:start}
 @media(min-width:980px){.co__g{grid-template-columns:1.15fr .85fr}}
+.co{overscroll-behavior:contain}
+.dr__b{overscroll-behavior:contain}
+.geo iframe{pointer-events:none}
+.co__bar{display:none}
+@media(max-width:979px){
+  .sumc{position:static}
+  .co__g{padding-bottom:110px}
+  .co__bar{display:flex;position:sticky;bottom:0;z-index:3;align-items:center;justify-content:space-between;gap:14px;
+    padding:12px var(--pad) calc(12px + env(safe-area-inset-bottom));background:rgba(243,241,236,.96);backdrop-filter:blur(12px);
+    border-top:1px solid var(--line)}
+  .co__bar span{display:block;font-family:var(--m);font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:var(--i52)}
+  .co__bar b{font-family:var(--d);font-weight:900;font-size:28px;line-height:1}
+  .co__bar .btn{height:50px;padding:0 22px;flex:0 0 auto;background:var(--ink);color:#fff;border-color:var(--ink)}
+  .co__bar.off{display:none}
+}
+@media(max-width:640px){
+  .co .fld input,.co .fld select,.co .fld textarea,.co .ph input{font-size:16px}
+  .co__top .wrap{height:58px}
+  .co h1{font-size:44px}
+  .co__sub{margin-bottom:20px}
+  .blk{padding:16px}
+  .meth label{padding:14px}
+  .loc .pinb{width:100%;justify-content:center;height:50px}
+  .geo{padding:10px;gap:12px}
+}
 .co h1{margin:0 0 6px}
 .co__sub{color:var(--i52);margin:0 0 30px;font-size:14px}
 .blk{border:1px solid var(--line);border-radius:6px;background:var(--card);padding:clamp(18px,2.4vw,28px);margin-bottom:14px}
@@ -665,7 +690,7 @@ html.lenis,html.lenis body{height:auto}
 <div class="mb"><a class="btn btn--o" href="#shop">Shop</a><button class="btn" type="button" id="openCart2">Cart &middot; <span id="cartN2">0</span></button></div>
 
 <div class="scrim" id="scrim"></div>
-<aside class="dr" id="dr" aria-label="Cart">
+<aside class="dr" id="dr" aria-label="Cart" data-lenis-prevent>
   <div class="dr__h"><b>Your cart</b><button type="button" id="closeCart" aria-label="Close">&times;</button></div>
   <div class="dr__b" id="cartBody"></div>
   <div class="dr__f">
@@ -675,7 +700,7 @@ html.lenis,html.lenis body{height:auto}
   </div>
 </aside>
 
-<section class="co" id="co" aria-label="Checkout">
+<section class="co" id="co" aria-label="Checkout" data-lenis-prevent>
   <div class="co__top"><div class="wrap">
     <button class="co__back" type="button" id="coBack">&larr; Back to shop</button>
     <img class="logo" id="coLogo" alt="NOVA.EMOTO" style="height:26px;margin-left:12px">
@@ -761,6 +786,8 @@ html.lenis,html.lenis body{height:auto}
       <button class="btn" type="button" id="doneBack">Back to the shop</button>
     </div>
   </div>
+  <div class="co__bar" id="coBar"><div><span>Total</span><b id="coBarTot">AED 0</b></div>
+    <button class="btn" type="button" id="coBarBtn">Place order</button></div>
 </section>
 
 <script src="https://cdn.jsdelivr.net/npm/lenis@1.1.13/dist/lenis.min.js"></script>
@@ -901,7 +928,7 @@ html.lenis,html.lenis body{height:auto}
         l.q + '</span><button type="button" data-k="' + l.k + '" data-d="1" aria-label="More">+</button></div></div><span class="li__p">' +
         money(l.q * l.p.price) + '</span></div>';
     }).join("") : '<p class="empty" style="padding:20px 0">Your cart is empty.</p>';
-    var fee = feeNow(); $("coSub").textContent = money(sum); $("coFee").textContent = fee ? money(fee) : "Free"; $("coTot").textContent = money(sum + fee);
+    var fee = feeNow(); $("coSub").textContent = money(sum); $("coFee").textContent = fee ? money(fee) : "Free"; $("coTot").textContent = money(sum + fee); $("coBarTot").textContent = money(sum + fee); $("coBarBtn").disabled = !L.length;
     $("place").disabled = !L.length;
   }
   $("coLines").addEventListener("click", function(e){
@@ -954,9 +981,10 @@ html.lenis,html.lenis body{height:auto}
     }, function(){ b.classList.remove("busy"); t.textContent = "Use my location to fill this in"; n.textContent = "Location was blocked. No problem, just type your address below."; },
     { enableHighAccuracy:true, timeout:15000, maximumAge:0 });
   });
+  $("coBarBtn").addEventListener("click", function(){ $("place").click(); });
   function openCheckout(){
     if (!lines().length){ shut(); return; }
-    shut(); $("coDone").hidden = true; $("coMain").hidden = false;
+    shut(); $("coDone").hidden = true; $("coMain").hidden = false; $("coBar").classList.remove("off");
     paintCheckout(); $("co").classList.add("on"); $("co").scrollTop = 0;
     document.body.classList.add("lock"); if (lenis) lenis.stop();
     setTimeout(function(){ $("cName").focus({ preventScroll:true }); }, 450);
@@ -1001,7 +1029,7 @@ html.lenis,html.lenis body{height:auto}
         (land ? "\nLandmark: " + land : "") + (pin ? "\nLocation pin: " + pin : "") : "Collection") +
       (note ? "\nNotes: " + note : "");
     window.open("https://wa.me/" + WA + "?text=" + encodeURIComponent(msg), "_blank", "noopener");
-    $("doneRef").textContent = ref; $("coMain").hidden = true; $("coDone").hidden = false; $("co").scrollTop = 0;
+    $("doneRef").textContent = ref; $("coMain").hidden = true; $("coDone").hidden = false; $("coBar").classList.add("off"); $("co").scrollTop = 0;
     cart = {}; paint();
   });
   var ask = "https://wa.me/" + WA + "?text=" + encodeURIComponent("Hi NOVA.EMOTO, I have a question about your LBX parts.");
