@@ -199,6 +199,19 @@ html.lenis,html.lenis body{height:auto}
 .ft__mark span{display:inline-block;will-change:transform}
 [data-a]{will-change:transform,opacity}
 
+/* feature bar (replaces the scrolling ticker) */
+.feat{position:relative;z-index:2;background:#0E1116;border-top:1px solid rgba(255,255,255,.08);border-bottom:1px solid rgba(255,255,255,.08)}
+.feat::before{content:"";position:absolute;left:0;right:0;top:0;height:2px;background:var(--anod)}
+.feat__g{display:grid;grid-template-columns:repeat(4,1fr)}
+.feat__i{display:flex;gap:14px;align-items:flex-start;padding:26px 22px;color:#fff;border-left:1px solid rgba(255,255,255,.08)}
+.feat__i:first-child{border-left:0;padding-left:0}
+.feat__i svg{width:28px;height:28px;flex:0 0 auto;color:#A99BFF;margin-top:1px}
+.feat__i b{display:block;font-family:var(--d);font-weight:800;font-size:21px;line-height:1.05;text-transform:uppercase}
+.feat__i span{display:block;font-size:13px;color:rgba(255,255,255,.62);margin-top:4px;line-height:1.4}
+@media(max-width:900px){.feat__g{grid-template-columns:1fr 1fr}.feat__i{padding:20px 14px}.feat__i:nth-child(3){border-left:0;padding-left:0}
+  .feat__i:nth-child(n+3){border-top:1px solid rgba(255,255,255,.08)}}
+@media(max-width:420px){.feat__i b{font-size:18px}.feat__i span{font-size:12px}}
+
 /* ticker */
 .tk{background:var(--anod);overflow:hidden;padding:15px 0;position:relative;z-index:2}
 .tk__in{display:flex;width:max-content;animation:slide 44s linear infinite}
@@ -369,6 +382,7 @@ html.lenis,html.lenis body{height:auto}
   -webkit-background-clip:text;background-clip:text;user-select:none}
 .ft__bot{color:rgba(255,255,255,.55)!important}
 .totop{color:#fff}
+.ft__legal{margin:28px 0 0;max-width:110ch;font-size:12px;line-height:1.6;color:rgba(255,255,255,.45)}
 .ttlink{display:inline-flex;align-items:center;gap:10px}
 .ttlink .tt{width:30px;height:30px;padding:6px;border:1px solid rgba(255,255,255,.22);border-radius:8px;transition:.2s}
 .ttlink:hover .tt{background:#fff;color:#141619;border-color:#fff}
@@ -429,6 +443,8 @@ html.lenis,html.lenis body{height:auto}
 .rows .grand{border-top:1px solid var(--line);margin-top:8px;padding-top:14px;color:var(--ink);align-items:baseline}
 .rows .grand b{font-family:var(--d);font-weight:900;font-size:36px}
 .place{width:100%;height:58px;margin-top:18px;font-size:15px}
+.agree{margin:14px 0 0;font-size:12.5px;line-height:1.55;color:var(--i52)}
+.agree a{color:var(--ink);text-decoration:underline;text-underline-offset:2px}
 .trust{display:grid;gap:8px;margin-top:16px;font-size:12.5px;color:var(--i52)}
 .trust div{display:flex;gap:9px;align-items:flex-start}
 .trust svg{width:16px;height:16px;flex:0 0 auto;margin-top:2px;color:var(--ti)}
@@ -519,7 +535,7 @@ html.lenis,html.lenis body{height:auto}
   </div>
 </section>
 
-<div class="tk" aria-hidden="true"><div class="tk__in" id="tk"></div></div>
+<section class="feat" aria-label="Why NOVA.EMOTO"><div class="wrap feat__g"><div class="feat__i rv l0"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14.7 6.3a4 4 0 0 0-5.4 5.4L3 18l3 3 6.3-6.3a4 4 0 0 0 5.4-5.4l-2.6 2.6-2.4-.6-.6-2.4z"/></svg><div><b>Built for the LBX</b><span>Every part sized for the Sur-Ron Light Bee X</span></div></div><div class="feat__i rv l1"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="9" cy="12" r="6"/><circle cx="15" cy="12" r="6"/></svg><div><b>Black or silver</b><span>Two finishes on every part</span></div></div><div class="feat__i rv l2"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 11.5a8.4 8.4 0 0 1-12.4 7.4L3 21l2.1-5.6A8.5 8.5 0 1 1 21 11.5z"/></svg><div><b>Order on WhatsApp</b><span>No card details on the site</span></div></div><div class="feat__i rv l3"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 7h11v9H3zM14 10h4l3 3v3h-7"/><circle cx="7" cy="17.5" r="1.8"/><circle cx="17" cy="17.5" r="1.8"/></svg><div><b>Delivery or collect</b><span>Anywhere in the UAE</span></div></div></div></section>
 
 <div class="zone dark topo angle-b" data-deco style="padding-bottom:clamp(28px,4vw,64px)"><span class="deco" aria-hidden="true">LBX</span>
 <section class="sec wrap" id="shop">
@@ -611,10 +627,16 @@ html.lenis,html.lenis body{height:auto}
     <div><img class="logo" data-i="logoLight" alt="NOVA.EMOTO">
       <p style="margin:0;font-size:13.5px;max-width:26ch">Upgrade parts for the Sur-Ron Light Bee X, sold in the UAE.</p></div>
     <div><h5>Parts</h5><ul><li><a href="#pegs">Prickly foot pegs</a></li><li><a href="#plate">Vented plates</a></li><li><a href="#locks">Shift locks</a></li><li><a href="#kit">Full kit</a></li></ul></div>
+    <div><h5>Legal</h5><ul><li><a href="privacy.html">Privacy policy</a></li><li><a href="terms.html">Terms of sale</a></li>
+      <li><a href="returns.html">Returns &amp; refunds</a></li><li><a href="delivery.html">Delivery &amp; collection</a></li></ul></div>
     <div><h5>Contact</h5><ul><li><a id="waFoot" target="_blank" rel="noopener" href="#">WhatsApp +971 55 504 2013</a></li>
       <li><a class="ttlink" target="_blank" rel="noopener" href="https://www.tiktok.com/@nova.emoto" aria-label="NOVA.EMOTO on TikTok"><svg class="tt" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M16.6 2h-3.3v13.4a2.9 2.9 0 1 1-2.9-2.9c.3 0 .6 0 .9.1V9.2a6.3 6.3 0 1 0 5.3 6.2V8.7a8 8 0 0 0 4.7 1.5V6.9a4.7 4.7 0 0 1-4.7-4.9z"/></svg><span>TikTok @nova.emoto</span></a></li></ul></div>
   </div>
   <p class="ft__mark" id="ftMark" aria-hidden="true">Nova.emoto</p>
+  <p class="ft__legal">NOVA.EMOTO is an independent parts seller and is not affiliated with, endorsed by or sponsored by
+    Sur-Ron or any other manufacturer. Brand and model names are trademarks of their respective owners and are used only to
+    describe fitment. Aftermarket parts are intended for off-road use; fitting them may affect your vehicle&rsquo;s warranty
+    and road legality. Riding photography is stock imagery.</p>
   <div class="ft__bot"><span>&copy; 2026 NOVA.EMOTO</span><span>Sur-Ron Light Bee X parts &middot; UAE &middot; Prices in AED</span>
     <a href="#top" class="totop">Back to top &uarr;</a></div>
 </div></footer>
@@ -678,10 +700,13 @@ html.lenis,html.lenis body{height:auto}
           <div class="grand"><span>Total</span><b id="coTot">AED 0</b></div>
         </div>
         <button class="btn place" type="button" id="place">Place order on WhatsApp</button>
+        <p class="agree">By placing your order you agree to our <a href="terms.html" target="_blank" rel="noopener">Terms of sale</a>
+          and <a href="returns.html" target="_blank" rel="noopener">Returns policy</a>. See how we use your details in our
+          <a href="privacy.html" target="_blank" rel="noopener">Privacy policy</a>.</p>
         <div class="trust">
           <div><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg><span>No card details on this site &mdash; you pay once we confirm stock.</span></div>
           <div><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg><span>Your order opens in WhatsApp, fully filled in. Just press send.</span></div>
-          <div><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg><span>Every part fits the Sur-Ron Light Bee X.</span></div>
+          <div><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg><span>Made for the Sur-Ron Light Bee X &mdash; not sure about your model? Ask us first.</span></div>
         </div>
       </div></aside>
     </div>
@@ -716,9 +741,9 @@ html.lenis,html.lenis body{height:auto}
       desc:"Wide CNC platform pegs with blue titanium pins that grip your boots. NOVA engraved, and the first thing riders look at on a built LBX.",
       specs:[["Fits","Sur-Ron Light Bee X"],["Build","CNC aluminium"],["Grip","Blue titanium pins"]] },
     { id:"plate", zone:"dark topo angle", tint:"t-vio", no:"02", name:"Titanium Bolt Vented Plate", price:180, img:{ black:"plates", silver:"plates" },
-      sub:"Front plate &middot; TG Built &times; NOVA", note:"Black &amp; silver shown",
+      sub:"Front plate &middot; LBX", note:"Black &amp; silver shown",
       desc:"Front plate with mesh vents, the race number 1 and titanium bolt hardware. It changes the whole face of the bike.",
-      specs:[["Fits","Sur-Ron Light Bee X"],["Hardware","Titanium bolts"],["Design","TG Built &times; NOVA"]] },
+      specs:[["Fits","Sur-Ron Light Bee X"],["Hardware","Titanium bolts"],["Design","Vented race plate"]] },
     { id:"locks", zone:"light topo angle", tint:"t-steel", no:"03", name:"Sur-Ron LBX Shift Locks", price:120, img:{ black:"locksBlack", silver:"locksSilver" },
       sub:"Hardware &middot; LBX",
       desc:"Bolt-on kit with a machined NOVA bracket, pin and all the hardware in the bag. Ready to fit out of the packet.",
@@ -900,8 +925,7 @@ html.lenis,html.lenis body{height:auto}
   $("closeCart").addEventListener("click", shut); scrim.addEventListener("click", shut);
   document.addEventListener("keydown", function(e){ if (e.key === "Escape"){ shut(); if ($("co").classList.contains("on")) closeCheckout(); } });
 
-  var w = ["Prickly foot pegs","Titanium bolt vented plates","Sur-Ron LBX shift locks","Black or silver","Order on WhatsApp","UAE"];
-  var th = ""; for (var r = 0; r < 2; r++) w.forEach(function(x){ th += "<span>" + x + "</span>"; }); $("tk").innerHTML = th;
+
 
   /* Glide: Lenis eases the wheel, and every reveal is tied to scroll position rather than
      fired once, so content slides in with the page instead of popping. */
