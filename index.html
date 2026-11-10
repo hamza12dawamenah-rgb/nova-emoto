@@ -425,6 +425,20 @@ html.lenis,html.lenis body{height:auto}
 .ph input{border-radius:0 6px 6px 0}
 .dubai{border-left:3px solid var(--ti);background:rgba(46,91,230,.07);padding:12px 14px;border-radius:0 6px 6px 0;margin-bottom:14px;font-size:13px}
 .dubai b{display:block;font-size:13.5px}.dubai span{color:var(--i52)}
+.loc{margin:0 0 14px;display:flex;flex-wrap:wrap;align-items:center;gap:8px 14px}
+.loc p{margin:0;font-size:12.5px;color:var(--i52);flex:1 1 200px}
+.pinb.busy{opacity:.6;pointer-events:none}
+.geo{display:grid;grid-template-columns:200px 1fr;gap:16px;border:1px solid var(--line);border-radius:6px;padding:12px;margin:0 0 14px;background:#fff}
+.geo[hidden]{display:none}
+.geo iframe{width:100%;height:100%;min-height:170px;border:0;border-radius:4px;background:#e8e8e8}
+.geo__t b{display:block;font-size:14.5px}.geo__t p{margin:4px 0 10px;font-size:12.5px;color:var(--i52)}
+.geo.warn{border-color:#C2410C}.geo.warn #geoHead{color:#C2410C}
+.chk{display:flex!important;gap:10px;align-items:flex-start;font-size:13px!important;font-weight:600!important;cursor:pointer;margin:0!important}
+.chk input{width:18px!important;height:18px!important;margin:1px 0 0;flex:0 0 auto;accent-color:var(--ti)}
+.fld.bad .chk{color:#C2410C}
+.geo__x{margin-top:10px;background:none;border:0;padding:0;font:inherit;font-size:12px;color:var(--i52);text-decoration:underline;cursor:pointer}
+.fld input.auto{background:rgba(46,91,230,.06);border-color:rgba(46,91,230,.45)}
+@media(max-width:640px){.geo{grid-template-columns:1fr}.geo iframe{min-height:180px}}
 .pin{margin-top:14px;display:flex;flex-wrap:wrap;align-items:center;gap:8px 14px}
 .pinb{display:inline-flex;align-items:center;gap:8px;height:46px;padding:0 16px;border-radius:6px;border:1px solid var(--line);background:transparent;color:inherit;font:inherit;font-size:14px;font-weight:500;cursor:pointer}
 .pinb svg{width:18px;height:18px;color:var(--ti)}
@@ -689,6 +703,20 @@ html.lenis,html.lenis body{height:auto}
           </div>
           <div id="addr" style="margin-top:14px">
             <div class="dubai"><b>Delivering to Dubai</b><span>We only deliver inside Dubai. Outside Dubai? Choose Collect.</span></div>
+            <div class="loc">
+              <button type="button" class="pinb" id="pinBtn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 21s-7-6.2-7-11.5a7 7 0 0 1 14 0C19 14.8 12 21 12 21z"/><circle cx="12" cy="9.5" r="2.5"/></svg><span id="pinTxt">Use my location to fill this in</span></button>
+              <p id="pinNote">Or type your address below.</p>
+            </div>
+            <div class="geo" id="geo" hidden>
+              <iframe id="geoMap" title="Your location on the map" loading="lazy" tabindex="-1"></iframe>
+              <div class="geo__t">
+                <b id="geoHead">Check your address</b>
+                <p id="geoMsg">We filled this in from your location. Phone locations can be off by a building or two, so please check every field and fix anything that's wrong.</p>
+                <div class="fld" data-f="geook"><label class="chk"><input type="checkbox" id="geoOk"> <span id="geoOkTxt">I've checked my address and the pin, and they're correct</span></label>
+                  <div class="er">Please check your address and tick this box.</div></div>
+                <button type="button" class="geo__x" id="geoClear">Remove location and type it myself</button>
+              </div>
+            </div>
             <div class="f2 two">
               <div class="fld" data-f="area"><label for="cArea">Area / community</label>
                 <input id="cArea" autocomplete="address-level3" placeholder="e.g. JVC, Al Barsha 1, Dubai Marina"><div class="er">Please add your area.</div></div>
@@ -701,10 +729,6 @@ html.lenis,html.lenis body{height:auto}
             </div>
             <div class="fld" style="margin-top:14px"><label for="cLand">Nearest landmark (optional)</label>
               <input id="cLand" placeholder="e.g. Next to Circle Mall"></div>
-            <div class="pin">
-              <button type="button" class="pinb" id="pinBtn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 21s-7-6.2-7-11.5a7 7 0 0 1 14 0C19 14.8 12 21 12 21z"/><circle cx="12" cy="9.5" r="2.5"/></svg><span id="pinTxt">Add my exact location pin</span></button>
-              <p id="pinNote">Optional, but it helps the driver find you. Sent only in your WhatsApp message.</p>
-            </div>
           </div>
           <div class="fld" style="margin-top:14px"><label for="cNote">Notes (optional)</label>
             <textarea id="cNote" placeholder="Anything we should know &mdash; bike year, best time to call&hellip;"></textarea></div>
@@ -888,15 +912,47 @@ html.lenis,html.lenis body{height:auto}
   });
   var FEE = 15, pin = "";
   function feeNow(){ var m = document.querySelector('input[name="meth"]:checked'); return m && m.value === "pickup" ? 0 : FEE; }
+  var geoOn = false;
+  function resetGeo(){
+    pin = ""; geoOn = false; $("geo").hidden = true; $("geo").classList.remove("warn"); $("geoOk").checked = false;
+    $("geoMap").removeAttribute("src"); $("pinBtn").classList.remove("ok", "busy");
+    $("pinTxt").textContent = "Use my location to fill this in"; $("pinNote").textContent = "Or type your address below.";
+    ["cArea","cStreet","cBld"].forEach(function(id){ $(id).classList.remove("auto"); });
+  }
+  $("geoClear").addEventListener("click", resetGeo);
+  $("geoOk").addEventListener("change", function(){ this.closest(".fld").classList.remove("bad"); });
+  ["cArea","cStreet","cBld","cUnit","cLand"].forEach(function(id){
+    $(id).addEventListener("input", function(){ this.classList.remove("auto"); if (geoOn) $("geoOk").checked = false; });
+  });
   $("pinBtn").addEventListener("click", function(){
     var b = this, t = $("pinTxt"), n = $("pinNote");
-    if (!navigator.geolocation){ n.textContent = "Your browser can't share location. Add a landmark instead."; return; }
-    t.textContent = "Finding you\u2026";
+    if (!navigator.geolocation){ n.textContent = "Your browser can't share location. Please type your address."; return; }
+    b.classList.add("busy"); t.textContent = "Finding you…"; n.textContent = "Tap Allow if your phone asks.";
     navigator.geolocation.getCurrentPosition(function(p){
-      pin = "https://maps.google.com/?q=" + p.coords.latitude.toFixed(6) + "," + p.coords.longitude.toFixed(6);
-      b.classList.add("ok"); t.textContent = "Location pin added"; n.textContent = "Accurate to about " + Math.round(p.coords.accuracy) + " m. Tap again to refresh.";
-    }, function(){ t.textContent = "Add my exact location pin"; n.textContent = "Location was blocked. That's fine, just make sure the address is complete."; },
-    { enableHighAccuracy:true, timeout:12000 });
+      var la = p.coords.latitude, lo = p.coords.longitude, acc = Math.round(p.coords.accuracy);
+      pin = "https://maps.google.com/?q=" + la.toFixed(6) + "," + lo.toFixed(6);
+      var d = .0025; $("geoMap").src = "https://www.openstreetmap.org/export/embed.html?bbox=" + (lo-d) + "," + (la-d) + "," + (lo+d) + "," + (la+d) + "&layer=mapnik&marker=" + la + "," + lo;
+      t.textContent = "Getting your address…";
+      fetch("https://nominatim.openstreetmap.org/reverse?format=jsonv2&addressdetails=1&zoom=18&accept-language=en&lat=" + la + "&lon=" + lo)
+        .then(function(r){ return r.json(); }).catch(function(){ return {}; })
+        .then(function(j){
+          var a = j.address || {}, put = function(id, v){ if (v){ $(id).value = v; $(id).classList.add("auto"); $(id).closest(".fld").classList.remove("bad"); } };
+          put("cArea", a.neighbourhood || a.suburb || a.quarter || a.residential || a.city_district || "");
+          put("cStreet", [a.house_number, a.road].filter(Boolean).join(" "));
+          put("cBld", (j.name && j.name !== a.road) ? j.name : (a.building || a.house_name || ""));
+          var inDubai = /dubai/i.test([a.state, a.city, a.county, j.display_name].join(" "));
+          geoOn = true; $("geoOk").checked = false; $("geo").hidden = false; $("geo").classList.toggle("warn", !inDubai && !!j.address);
+          $("geoHead").textContent = (!inDubai && j.address) ? "This looks outside Dubai" : "Check your address";
+          $("geoOkTxt").textContent = (!inDubai && j.address) ? "This address is in Dubai, my location was wrong. I've fixed the fields above." : "I've checked my address and the pin, and they're correct";
+          $("geoMsg").textContent = (!inDubai && j.address) ? "We only deliver inside Dubai. If this is wrong, fix the address below, or choose Collect instead."
+            : !j.address ? "We added your pin but couldn't read the street name. Please type your address and check the pin."
+            : "We filled this in from your location (accurate to about " + acc + " m). Phone locations can be off by a building or two, so please check every field and fix anything that's wrong.";
+          b.classList.remove("busy"); b.classList.add("ok"); t.textContent = "Location added · tap to refresh";
+          n.textContent = "Now add your flat or villa number."; $("cUnit").focus({ preventScroll:true });
+          $("geo").scrollIntoView({ behavior:"smooth", block:"center" });
+        });
+    }, function(){ b.classList.remove("busy"); t.textContent = "Use my location to fill this in"; n.textContent = "Location was blocked. No problem, just type your address below."; },
+    { enableHighAccuracy:true, timeout:15000, maximumAge:0 });
   });
   function openCheckout(){
     if (!lines().length){ shut(); return; }
@@ -927,11 +983,12 @@ html.lenis,html.lenis body{height:auto}
     if (phone.length < 8 || phone.length > 9) bad.push("phone");
     if (meth === "delivery"){
       if (area.length < 2) bad.push("area"); if (street.length < 1) bad.push("street");
-      if (bld.length < 2) bad.push("bld"); if (unit.length < 1) bad.push("unit"); }
+      if (bld.length < 2) bad.push("bld"); if (unit.length < 1) bad.push("unit");
+      if (geoOn && !$("geoOk").checked) bad.push("geook"); }
     document.querySelectorAll("#coForm .fld[data-f]").forEach(function(f){ f.classList.toggle("bad", bad.indexOf(f.dataset.f) > -1); });
     if (bad.length){
       var first = document.querySelector("#coForm .fld.bad");
-      first.scrollIntoView({ behavior:"smooth", block:"center" }); first.querySelector("input,select").focus({ preventScroll:true });
+      first.scrollIntoView({ behavior:"smooth", block:"center" }); var fi = first.querySelector("input,select"); if (fi) fi.focus({ preventScroll:true });
       return;
     }
     var sum = 0; L.forEach(function(l){ sum += l.q * l.p.price; }); var fee = meth === "delivery" ? FEE : 0;
