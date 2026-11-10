@@ -305,6 +305,34 @@ html.lenis,html.lenis body{height:auto}
   border-radius:var(--r);background:#111316}
 .band img{position:absolute;left:0;top:-8%;width:100%;height:116%;object-fit:cover}
 .band::after{content:"";position:absolute;inset:0;background:linear-gradient(to right,rgba(10,11,13,.9),rgba(10,11,13,.3) 72%)}
+#kitSum .kd span:last-child{color:#C9C0FF;font-weight:600}
+.deals{margin-top:clamp(36px,5vw,64px)}
+.deals__h{display:flex;justify-content:space-between;align-items:flex-end;gap:18px;flex-wrap:wrap;margin-bottom:22px}
+.deals__h .mono{color:#A99BFF;margin-bottom:10px}
+.deals__g{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
+.deal{position:relative;display:flex;flex-direction:column;border:1px solid rgba(255,255,255,.12);border-radius:var(--r);background:rgba(255,255,255,.035);overflow:hidden;transition:border-color .3s,transform .4s var(--ease)}
+.deal::before{content:"";position:absolute;left:0;right:0;top:0;height:3px;background:var(--anod)}
+.deal:hover{border-color:rgba(169,155,255,.55);transform:translateY(-3px)}
+.deal__pics{display:flex;align-items:center;justify-content:center;gap:4px;height:170px;background:radial-gradient(circle at 50% 45%,#fff,#E3E6EE 75%);position:relative}
+.deal__pics img{max-height:118px;max-width:42%;object-fit:contain;filter:drop-shadow(0 10px 14px rgba(0,0,0,.18))}
+.deal__pics i{font-style:normal;font-family:var(--d);font-weight:900;font-size:26px;color:#0E1116;opacity:.55}
+.deal__save{position:absolute;top:14px;left:14px;background:#0E1116;color:#fff;font-family:var(--m);font-size:10.5px;letter-spacing:.12em;text-transform:uppercase;padding:6px 9px;border-radius:4px}
+.deal__b{padding:18px 18px 20px;display:flex;flex-direction:column;flex:1;color:#fff}
+.deal__b b{font-family:var(--d);font-weight:800;font-size:23px;line-height:1;text-transform:uppercase}
+.deal__p{display:flex;align-items:baseline;gap:10px;margin:12px 0 16px}
+.deal__p strong{font-family:var(--d);font-weight:900;font-size:40px;line-height:1}
+.deal__p small{font-family:var(--m);font-size:11px;letter-spacing:.1em;color:rgba(255,255,255,.55)}
+.deal__p s{font-family:var(--m);font-size:13px;color:rgba(255,255,255,.45)}
+.deal__b .btn{margin-top:auto;width:100%;height:48px}
+.deals__n{margin:16px 0 0;font-size:13px;color:rgba(255,255,255,.6)}
+@media(max-width:900px){.deals__g{grid-template-columns:1fr}.deal{flex-direction:row}.deal__pics{width:42%;height:auto;min-height:170px;flex:0 0 auto}.deal__pics img{max-height:96px}}
+@media(max-width:480px){.deal{flex-direction:column}.deal__pics{width:auto;height:150px;min-height:0}}
+.dline{display:flex;justify-content:space-between;gap:12px;padding:12px 0;border-bottom:1px solid var(--soft);font-size:13px}
+.dline span{color:var(--i72)}.dline span::before{content:"Deal \00b7  ";font-family:var(--m);font-size:10px;letter-spacing:.12em;color:var(--ti)}
+.dline b{font-family:var(--d);font-weight:800;font-size:18px;color:var(--ti);white-space:nowrap}
+.pd__deal{margin:18px 0 0;padding:12px 14px;border-left:3px solid var(--ti);background:rgba(46,91,230,.07);border-radius:0 6px 6px 0;font-size:14px}
+.pd__deal b{color:var(--ti)}
+.tile__t em s{display:block;font-size:11px;opacity:.6}
 .gift{display:grid;grid-template-columns:1fr 1fr;gap:0;margin-top:clamp(18px,2.4vw,28px);background:#0E1116;color:#fff;border-radius:var(--r);overflow:hidden;position:relative}
 .gift::before{content:"";position:absolute;left:0;right:0;top:0;height:3px;background:var(--anod);z-index:2}
 .gift__img{position:relative;min-height:420px;overflow:hidden}
@@ -551,7 +579,7 @@ html.lenis,html.lenis body{height:auto}
 <body>
 
 <div class="ann"><div class="wrap">
-  <span>Parts for the <b>Sur-Ron Light Bee X</b></span><span><b>Free NOVA keychain</b> with every order</span><span>Order on WhatsApp</span>
+  <span>Parts for the <b>Sur-Ron Light Bee X</b></span><span><b>Free NOVA keychain</b> with every order</span><span><b>2 shift locks</b> for AED 200</span>
 </div></div>
 
 <header class="hdr"><div class="hdr__in wrap">
@@ -605,6 +633,17 @@ html.lenis,html.lenis body{height:auto}
     <p class="rv l2">Every part is in stock in black and silver. Tap one to see it up close.</p>
   </div>
   <div class="tiles" id="tiles"></div>
+  <div class="deals" id="deals">
+    <div class="deals__h">
+      <div><p class="mono rv">Bundle deals</p><h3 class="d3 rv l1">Pair up and save.</h3></div>
+      <div class="fin rv l2" id="dealFin"><span>Finish</span>
+        <button class="sw" type="button" data-c="black" aria-pressed="true"><i></i>Black</button>
+        <button class="sw" type="button" data-c="silver" aria-pressed="false"><i></i>Silver</button>
+      </div>
+    </div>
+    <div class="deals__g" id="dealCards"></div>
+    <p class="deals__n rv">Deals apply automatically in your cart. Mix black and silver however you like.</p>
+  </div>
 </section>
 </div>
 
@@ -646,13 +685,14 @@ html.lenis,html.lenis body{height:auto}
         <li data-k="pegs"><span>Prickly foot pegs</span><span>AED 200</span></li>
         <li data-k="plate"><span>Titanium bolt vented plate</span><span>AED 180</span></li>
         <li data-k="locks"><span>Sur-Ron LBX shift locks</span><span>AED 120</span></li>
-        <li class="t"><span id="kitLabel">Full kit</span><b id="kitTot">AED 500</b></li>
+        <li id="kitDeal" class="kd"><span>Bundle deal</span><span id="kitDealV">&minus;AED 20</span></li>
+        <li class="t"><span id="kitLabel">Full kit</span><b id="kitTot">AED 480</b></li>
       </ul>
       <div class="fin" id="kitFin"><span>Finish</span>
         <button class="sw" type="button" data-c="black" aria-pressed="true"><i></i>Black</button>
         <button class="sw" type="button" data-c="silver" aria-pressed="false"><i></i>Silver</button>
       </div>
-      <button class="btn" type="button" id="addKit">Add full kit &middot; AED 500</button>
+      <button class="btn" type="button" id="addKit">Add full kit &middot; AED 480</button>
     </div>
   </div>
 </section></div>
@@ -787,6 +827,7 @@ html.lenis,html.lenis body{height:auto}
         <div id="coLines"></div>
         <div class="rows">
           <div><span>Subtotal</span><span id="coSub">AED 0</span></div>
+          <div id="coDealRow" hidden><span>Bundle deals</span><span id="coDeal" style="color:var(--ti);font-weight:600">&minus;AED 0</span></div>
           <div><span>Delivery</span><span id="coFee">AED 15</span></div>
           <div class="grand"><span>Total</span><b id="coTot">AED 0</b></div>
         </div>
@@ -841,15 +882,56 @@ html.lenis,html.lenis body{height:auto}
     { id:"locks", zone:"light topo angle", tint:"t-steel", no:"03", name:"Sur-Ron LBX Shift Locks", price:120, img:{ black:"locksBlack", silver:"locksSilver" },
       sub:"Hardware &middot; LBX",
       desc:"Bolt-on kit with a machined NOVA bracket, pin and all the hardware in the bag. Ready to fit out of the packet.",
-      specs:[["Fits","Sur-Ron Light Bee X"],["In the bag","Bracket, pin, bolts"],["Build","CNC machined"]] }
+      specs:[["Fits","Sur-Ron Light Bee X"],["In the bag","Bracket, pin, bolts"],["Build","CNC machined"]],
+      deal:"<b>Deals:</b> 2 for AED 200 &middot; with foot pegs AED 300 &middot; with the vented plate AED 280" }
   ];
   var byId = function(id){ return P.filter(function(p){ return p.id === id; })[0]; };
+  /* Bundle deals: 2 locks = 200, locks + pegs = 300, locks + plate = 280 (each saves AED 20 per shift lock) */
+  var DEALS = [
+    { k:"pair",  t:"2 shift locks for AED 200",       save:40, items:[["locks",2]] },
+    { k:"pegs",  t:"Shift locks + foot pegs for AED 300", save:20, items:[["locks",1],["pegs",1]] },
+    { k:"plate", t:"Shift locks + vented plate for AED 280", save:20, items:[["locks",1],["plate",1]] }
+  ];
+  function bestDeals(cnt){
+    var L = cnt.locks || 0, Pg = cnt.pegs || 0, V = cnt.plate || 0;
+    var c = Math.min(L, Pg + V); if ((L - c) % 2 && c > 0) c--;
+    var pp = Math.min(c, Pg), out = [];
+    var n = { pair:Math.floor((L - c) / 2), pegs:pp, plate:c - pp };
+    DEALS.forEach(function(d){ if (n[d.k]) out.push({ t:d.t, n:n[d.k], save:d.save * n[d.k] }); });
+    return out;
+  }
+  function saved(ds){ return ds.reduce(function(a, d){ return a + d.save; }, 0); }
+  function countsOf(L){ var c = {}; L.forEach(function(l){ c[l.p.id] = (c[l.p.id] || 0) + l.q; }); return c; }
+  function dealRows(ds, cls){ return ds.map(function(d){ return '<div class="' + cls + '"><span>' + d.t + (d.n > 1 ? " \u00d7 " + d.n : "") + '</span><b>&minus;' + money(d.save) + '</b></div>'; }).join(""); }
 
   $("tiles").innerHTML = P.map(function(p, i){
     return '<a class="tile rv l' + (i + 1) + '" href="#' + p.id + '"><div class="stage ' + p.tint + '"><img class="on" src="' +
       IMG[p.img.black] + '" alt="' + p.name + '"></div><div class="tile__t"><div><b>' + p.name +
-      '</b><span>' + p.sub + '</span></div><em>' + money(p.price) + '</em></div></a>';
+      '</b><span>' + p.sub + '</span></div><em>' + money(p.price) + (p.id === "locks" ? '<s style="text-decoration:none">2 for AED 200</s>' : '') + '</em></div></a>';
   }).join("");
+
+  var dealC = "black";
+  function paintDeals(){
+    var pic = function(id){ var p = byId(id); return '<img data-id="' + id + '" src="' + IMG[p.img[dealC]] + '" alt="">'; };
+    $("dealCards").innerHTML = DEALS.map(function(d, i){
+      var full = 0, pics = [];
+      d.items.forEach(function(it){ full += byId(it[0]).price * it[1]; for (var q = 0; q < it[1]; q++) pics.push(pic(it[0])); });
+      var name = d.k === "pair" ? "2 &times; Shift locks" : d.k === "pegs" ? "Shift locks + Foot pegs" : "Shift locks + Vented plate";
+      return '<article class="deal rv l' + (i + 1) + '"><div class="deal__pics"><span class="deal__save">Save ' + money(d.save) + '</span>' + pics.join("<i>+</i>") + '</div>' +
+        '<div class="deal__b"><b>' + name + '</b><div class="deal__p"><small>AED</small><strong>' + (full - d.save) + '</strong><s>' + money(full) + '</s></div>' +
+        '<button class="btn" type="button" data-deal="' + i + '">Add deal</button></div></article>';
+    }).join("");
+  }
+  paintDeals();
+  $("dealFin").addEventListener("click", function(e){
+    var b = e.target.closest(".sw"); if (!b) return; dealC = b.dataset.c;
+    this.querySelectorAll(".sw").forEach(function(x){ x.setAttribute("aria-pressed", String(x === b)); });
+    document.querySelectorAll("#dealCards img[data-id]").forEach(function(im){ im.src = IMG[byId(im.dataset.id).img[dealC]]; });
+  });
+  $("dealCards").addEventListener("click", function(e){
+    var b = e.target.closest("[data-deal]"); if (!b) return;
+    DEALS[+b.dataset.deal].items.forEach(function(it){ addLine(it[0], dealC, it[1]); }); openCart();
+  });
 
   var state = {};
   $("details").innerHTML = P.map(function(p, i){
@@ -863,6 +945,7 @@ html.lenis,html.lenis body{height:auto}
       '<div class="pd__body"><p class="mono rv">' + p.sub + '</p><h3 class="d3 rv l1">' + p.name + '</h3>' +
         '<p class="rv l1">' + p.desc + '</p>' +
         '<ul class="specs rv l2">' + p.specs.map(function(s){ return '<li><span>' + s[0] + '</span><span>' + s[1] + '</span></li>'; }).join("") + '</ul>' +
+        (p.deal ? '<p class="pd__deal rv l2">' + p.deal + '</p>' : '') +
         '<div class="fin rv l2"><span>Finish</span>' + Object.keys(COLORS).map(function(c){
           return '<button class="sw" type="button" data-c="' + c + '" aria-pressed="' + (c === "black") + '"><i></i>' + COLORS[c] + '</button>'; }).join("") + '</div>' +
         '<div class="buy rv l3"><div class="price"><small>AED</small>' + p.price + '</div>' +
@@ -903,6 +986,8 @@ html.lenis,html.lenis body{height:auto}
     P.forEach(function(p){ if (kitOn[p.id]){ tot += p.price; n++; } });
     document.querySelectorAll("#kit .kit__it").forEach(function(b){ b.setAttribute("aria-pressed", String(kitOn[b.dataset.k])); b.querySelector(".tick").textContent = kitOn[b.dataset.k] ? "In kit" : "Tap to add"; });
     document.querySelectorAll("#kitSum li[data-k]").forEach(function(li){ li.classList.toggle("off", !kitOn[li.dataset.k]); });
+    var kc = {}; P.forEach(function(p){ if (kitOn[p.id]) kc[p.id] = 1; }); var ks = saved(bestDeals(kc)); tot -= ks;
+    $("kitDeal").hidden = !ks; $("kitDealV").textContent = "\u2212" + money(ks);
     $("kitTot").textContent = money(tot);
     $("kitLabel").textContent = n === 3 ? "Full kit" : n + (n === 1 ? " part" : " parts");
     $("addKit").textContent = n ? "Add " + (n === 3 ? "full kit" : n + " part" + (n === 1 ? "" : "s")) + " \u00b7 " + money(tot) : "Pick at least one part";
@@ -925,13 +1010,13 @@ html.lenis,html.lenis body{height:auto}
   function paint(){
     var L = lines(), n = 0, sum = 0;
     L.forEach(function(l){ n += l.q; sum += l.q * l.p.price; });
-    $("cartN").textContent = n; $("cartN2").textContent = n; $("total").textContent = money(sum);
+    $("cartN").textContent = n; $("cartN2").textContent = n; $("total").textContent = money(sum - saved(bestDeals(countsOf(L))));
     $("cartBody").innerHTML = L.length ? L.map(function(l){
       return '<div class="li"><div class="li__img"><img src="' + IMG[l.p.img[l.c]] + '" alt=""></div><div><b>' + l.p.name +
         '</b><em>' + COLORS[l.c] + '</em><div class="q"><button type="button" data-k="' + l.k + '" data-d="-1" aria-label="Less">&minus;</button><span>' +
         l.q + '</span><button type="button" data-k="' + l.k + '" data-d="1" aria-label="More">+</button></div></div><span class="li__p">' +
         money(l.q * l.p.price) + '</span></div>';
-    }).join("") + GIFT : '<p class="empty">Your cart is empty.</p>';
+    }).join("") + GIFT + dealRows(bestDeals(countsOf(L)), "dline") : '<p class="empty">Your cart is empty.</p>';
     var msg = "Hi NOVA.EMOTO, I'd like to order:\n\n" + L.map(function(l){
       return l.q + " x " + l.p.name + " (" + COLORS[l.c] + ") - " + money(l.q * l.p.price); }).join("\n") + "\n\nTotal: " + money(sum);
     store.set("nova_cart", cart);
@@ -952,8 +1037,9 @@ html.lenis,html.lenis body{height:auto}
         '</b><em>' + COLORS[l.c] + '</em><div class="q"><button type="button" data-k="' + l.k + '" data-d="-1" aria-label="Less">&minus;</button><span>' +
         l.q + '</span><button type="button" data-k="' + l.k + '" data-d="1" aria-label="More">+</button></div></div><span class="li__p">' +
         money(l.q * l.p.price) + '</span></div>';
-    }).join("") + GIFT.replace('class="li li--gift"', 'class="sl li--gift"') : '<p class="empty" style="padding:20px 0">Your cart is empty.</p>';
-    var fee = feeNow(); $("coSub").textContent = money(sum); $("coFee").textContent = fee ? money(fee) : "Free"; $("coTot").textContent = money(sum + fee); $("coBarTot").textContent = money(sum + fee); $("coBarBtn").disabled = !L.length;
+    }).join("") + GIFT.replace('class="li li--gift"', 'class="sl li--gift"') + dealRows(bestDeals(countsOf(L)), "dline") : '<p class="empty" style="padding:20px 0">Your cart is empty.</p>';
+    var off = saved(bestDeals(countsOf(L))); $("coDealRow").hidden = !off; $("coDeal").textContent = "\u2212" + money(off); sum -= off;
+    var fee = feeNow(); $("coSub").textContent = money(sum + off); $("coFee").textContent = fee ? money(fee) : "Free"; $("coTot").textContent = money(sum + fee); $("coBarTot").textContent = money(sum + fee); $("coBarBtn").disabled = !L.length;
     $("place").disabled = !L.length;
   }
   $("coLines").addEventListener("click", function(e){
@@ -1045,11 +1131,13 @@ html.lenis,html.lenis body{height:auto}
       return;
     }
     var sum = 0; L.forEach(function(l){ sum += l.q * l.p.price; }); var fee = meth === "delivery" ? FEE : 0;
+    var ds = bestDeals(countsOf(L)), off = saved(ds);
     var ref = "NE-" + String(Date.now()).slice(-5);
     var msg = "New order " + ref + "\n\n" + L.map(function(l){
         return l.q + " x " + l.p.name + " (" + COLORS[l.c] + ") - " + money(l.q * l.p.price); }).join("\n") +
       "\n+ 1 x NOVA keychain - FREE" +
-      "\n\nSubtotal: " + money(sum) + "\nDelivery: " + (fee ? money(fee) : "Free (collection)") + "\nTotal: " + money(sum + fee) +
+      ds.map(function(d){ return "\nDeal: " + d.t + (d.n > 1 ? " x" + d.n : "") + " (-" + money(d.save) + ")"; }).join("") +
+      "\n\nSubtotal: " + money(sum) + (off ? "\nBundle savings: -" + money(off) : "") + "\nDelivery: " + (fee ? money(fee) : "Free (collection)") + "\nTotal: " + money(sum - off + fee) +
       "\n\nName: " + name + "\nWhatsApp: +971 " + phone +
       "\n" + (meth === "delivery" ? "Deliver to: " + unit + ", " + bld + ", " + street + ", " + area + ", Dubai" +
         (land ? "\nLandmark: " + land : "") + (pin ? "\nLocation pin: " + pin : "") : "Collection") +
