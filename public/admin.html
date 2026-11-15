@@ -33,6 +33,9 @@ input[type=password]{width:100%;height:48px;border:1px solid var(--line);border-
 .tog button.in{border-color:var(--ok);color:var(--ok)}
 .tog button.out{border-color:var(--bad);color:var(--bad);background:#FEF3F2}
 .hint{color:var(--mut);font-size:13px;margin:8px 0 0}
+.backs{flex-basis:100%;display:grid;gap:6px}
+.backs label{display:flex;align-items:center;gap:8px;font-size:13px;color:var(--bad);font-weight:600;flex-wrap:wrap}
+.backs select{height:36px;border:1px solid var(--line);border-radius:6px;padding:0 8px;font:inherit;font-size:13px;background:#fff;color:var(--ink)}
 .saved{color:var(--ok);font-size:13px;font-weight:600}
 .filters{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:10px}
 .filters button{height:34px;padding:0 12px;border-radius:6px;border:1px solid var(--line);background:#fff;font:inherit;font-size:13px;cursor:pointer}
@@ -70,7 +73,7 @@ input[type=password]{width:100%;height:48px;border:1px solid var(--line);border-
     <h2>Stock</h2>
     <div class="card">
       <div id="stock"></div>
-      <p class="hint">Tap to switch between <b style="color:var(--ok)">In stock</b> and <b style="color:var(--bad)">Sold out</b>. Sold-out finishes can't be ordered on the website. <span class="saved" id="saved"></span></p>
+      <p class="hint">Tap to switch between <b style="color:var(--ok)">In stock</b> and <b style="color:var(--bad)">Sold out</b>. Sold-out finishes can't be ordered on the website. Pick when they'll be back and customers will see it. <span class="saved" id="saved"></span></p>
     </div>
     <h2>Orders</h2>
     <div class="filters" id="filters">
@@ -89,6 +92,7 @@ input[type=password]{width:100%;height:48px;border:1px solid var(--line);border-
   var KEY = "";
   try { KEY = sessionStorage.getItem("nova_admin") || ""; } catch(e){}
   var NAMES = { pegs:"Prickly Foot Pegs", plate:"Vented Plate", locks:"Shift Locks" }, COLORS = { black:"Black", silver:"Silver" };
+  var BACK = ["In a few days", "In about 1 week", "In about 2 weeks", "In about a month"];
   var stock = null, orders = [], filter = "open";
   var money = function(n){ return "AED " + Number(n).toLocaleString("en-US"); };
   var esc = function(s){ return String(s == null ? "" : s).replace(/[&<>"']/g, function(c){ return { "&":"&amp;", "<":"&lt;", ">":"&gt;", '"':"&quot;", "'":"&#39;" }[c]; }); };
@@ -115,14 +119,28 @@ input[type=password]{width:100%;height:48px;border:1px solid var(--line);border-
       return '<div class="srow"><b>' + NAMES[id] + '</b><div class="tog">' + Object.keys(COLORS).map(function(c){
         var on = stock[id][c] !== false;
         return '<button type="button" class="' + (on ? "in" : "out") + '" data-id="' + id + '" data-c="' + c + '">' + COLORS[c] + ': ' + (on ? "In stock" : "Sold out") + '</button>';
+      }).join("") + '</div>' +
+      '<div class="backs">' + Object.keys(COLORS).filter(function(c){ return stock[id][c] === false; }).map(function(c){
+        var cur = (stock.back && stock.back[id] && stock.back[id][c]) || "";
+        return '<label>' + COLORS[c] + ' back in stock: <select data-id="' + id + '" data-c="' + c + '"><option value="">Not sure yet</option>' +
+          BACK.map(function(o){ return '<option' + (o === cur ? ' selected' : '') + '>' + o + '</option>'; }).join("") + '</select></label>';
       }).join("") + '</div></div>';
     }).join("");
+  }
+  function saveStock(){
+    $("saved").textContent = "Saving…";
+    api("/api/stock", { method:"POST", body: JSON.stringify({ stock: stock }) }).then(function(s){ stock = s; drawStock(); $("saved").textContent = "Saved ✓"; setTimeout(function(){ $("saved").textContent = ""; }, 2000); }).catch(function(){ $("saved").textContent = "Couldn't save, try again."; });
   }
   $("stock").addEventListener("click", function(e){
     var b = e.target.closest("button[data-id]"); if (!b) return;
     stock[b.dataset.id][b.dataset.c] = !(stock[b.dataset.id][b.dataset.c] !== false);
-    drawStock(); $("saved").textContent = "Saving…";
-    api("/api/stock", { method:"POST", body: JSON.stringify({ stock: stock }) }).then(function(s){ stock = s; drawStock(); $("saved").textContent = "Saved ✓"; setTimeout(function(){ $("saved").textContent = ""; }, 2000); }).catch(function(){ $("saved").textContent = "Couldn't save, try again."; });
+    drawStock(); saveStock();
+  });
+  $("stock").addEventListener("change", function(e){
+    var sel = e.target.closest("select[data-id]"); if (!sel) return;
+    stock.back = stock.back || {}; stock.back[sel.dataset.id] = stock.back[sel.dataset.id] || {};
+    if (sel.value) stock.back[sel.dataset.id][sel.dataset.c] = sel.value; else delete stock.back[sel.dataset.id][sel.dataset.c];
+    saveStock();
   });
 
   $("filters").addEventListener("click", function(e){

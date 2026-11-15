@@ -1,5 +1,5 @@
 // POST /api/order : validate, re-price on the server, check stock, save, email receipt + owner alert
-import { PRODUCTS, COLORS, priceOrder, readStock, ordersStore, json, sendMail, receiptHTML } from "../lib/shop.mjs";
+import { PRODUCTS, COLORS, priceOrder, readStock, ordersStore, json, sendMail, receiptHTML, notifyOwner } from "../lib/shop.mjs";
 
 const clip = (s, n) => String(s ?? "").trim().slice(0, n);
 
@@ -51,6 +51,7 @@ export default async (req) => {
   const [toCustomer] = await Promise.all([
     sendMail({ to: email, subject: `Your NOVA.EMOTO order ${ref}`, html: receiptHTML(order, false), replyTo: owner }),
     sendMail({ to: owner, subject: `New order ${ref} · ${name} · AED ${order.total}`, html: receiptHTML(order, true), replyTo: email }),
+    notifyOwner(order),
   ]);
   return json({ ok: true, ref, total: order.total, emailed: toCustomer });
 };

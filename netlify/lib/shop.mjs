@@ -51,21 +51,40 @@ export const DEFAULT_STOCK = Object.fromEntries(
 const shopStore = () => getStore({ name: "nova-shop", consistency: "strong" });
 export const ordersStore = () => getStore({ name: "nova-orders", consistency: "strong" });
 
-export async function readStock() {
-  const s = await shopStore().get("stock", { type: "json" });
+// "back" holds Ali's restock estimate for a sold-out finish, from a fixed list
+export const BACK_OPTIONS = ["In a few days", "In about 1 week", "In about 2 weeks", "In about a month"];
+function clean(s) {
   const out = structuredClone(DEFAULT_STOCK);
-  if (s) for (const id of Object.keys(out)) for (const c of Object.keys(COLORS)) {
+  out.back = {};
+  if (!s) return out;
+  for (const id of Object.keys(PRODUCTS)) for (const c of Object.keys(COLORS)) {
     if (s[id] && typeof s[id][c] === "boolean") out[id][c] = s[id][c];
+    const b = s.back && s.back[id] && s.back[id][c];
+    if (out[id][c] === false && BACK_OPTIONS.includes(b)) (out.back[id] ||= {})[c] = b;
   }
   return out;
 }
+export async function readStock() {
+  return clean(await shopStore().get("stock", { type: "json" }));
+}
 export async function writeStock(next) {
-  const clean = structuredClone(DEFAULT_STOCK);
-  for (const id of Object.keys(clean)) for (const c of Object.keys(COLORS)) {
-    if (next && next[id] && typeof next[id][c] === "boolean") clean[id][c] = next[id][c];
-  }
-  await shopStore().setJSON("stock", clean);
-  return clean;
+  const c = clean(next);
+  await shopStore().setJSON("stock", c);
+  return c;
+}
+
+// ---------- instant phone alert via ntfy (only order number + total, no customer details) ----------
+export async function notifyOwner(o) {
+  const topic = process.env.NTFY_TOPIC;
+  if (!topic) return false;
+  try {
+    const r = await fetch("https://ntfy.sh/" + encodeURIComponent(topic), {
+      method: "POST",
+      headers: { Title: "New NOVA order " + o.ref, Priority: "high", Tags: "shopping_cart", Click: "https://nova-emoto.com/admin.html" },
+      body: `${money(o.total)} · ${o.lines.reduce((a, l) => a + l.q, 0)} item(s) · ${o.method === "delivery" ? "Delivery" : "Collection"}. Tap to open your orders.`,
+    });
+    return r.ok;
+  } catch (e) { console.error("ntfy error", e); return false; }
 }
 
 // ---------- admin auth ----------

@@ -471,6 +471,7 @@ a.card:hover .arr{transform:translate(3px,-3px);color:var(--tx)}
 .rows .grand{border-top:1px solid var(--iline);padding-top:12px;margin-top:4px;align-items:baseline}
 .rows .grand span{font-weight:700}
 .rows .grand b{font-family:var(--d);font-weight:900;font-stretch:80%;font-size:34px}
+.restock{margin:10px 0 0;font-size:13.5px;font-weight:600;color:#B42318}
 .soldmsg{margin:14px 0 0;color:#B42318;font-size:13px;font-weight:600}
 .sw.oos{opacity:.5;text-decoration:line-through}
 .oosT{color:#B42318}
@@ -781,6 +782,12 @@ a.card:hover .arr{transform:translate(3px,-3px);color:var(--tx)}
       var p = P[+pv.dataset.i], sws = pv.querySelectorAll(".sw");
       sws.forEach(function(sw){ var ok = inStock(p.id, sw.dataset.c); sw.classList.toggle("oos", !ok); sw.lastChild.textContent = COLORS[sw.dataset.c] + (ok ? "" : " \u00b7 Sold out"); });
       if (!inStock(p.id, finish[p.id])){ var alt = Object.keys(COLORS).filter(function(c){ return inStock(p.id, c); })[0]; if (alt) pv.querySelector('.sw[data-c="' + alt + '"]').click(); }
+      var back = function(c){ var b = STOCK && STOCK.back && STOCK.back[p.id] && STOCK.back[p.id][c]; return b ? b.replace(/^In /, "back in ") : ""; };
+      var outs = Object.keys(COLORS).filter(function(c){ return !inStock(p.id, c); });
+      var rs = pv.querySelector(".restock"); if (!rs){ rs = document.createElement("p"); rs.className = "restock"; pv.querySelector(".fin").insertAdjacentElement("afterend", rs); }
+      rs.hidden = !outs.length;
+      rs.textContent = outs.length === 2 ? "Sold out" + (back("black") || back("silver") ? ", " + (back("black") || back("silver")) : " for now") + "."
+        : outs.map(function(c){ return COLORS[c] + " is sold out" + (back(c) ? ", " + back(c) : " for now") + "."; }).join(" ");
       var add = pv.querySelector("[data-add]"), ok2 = inStock(p.id, finish[p.id]);
       add.disabled = !ok2; add.textContent = ok2 ? "Add to cart" : "Sold out";
     });
