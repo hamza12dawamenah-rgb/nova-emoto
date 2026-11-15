@@ -1,0 +1,166 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex">
+<title>NOVA.EMOTO Orders</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@700;900&family=Hanken+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#F4F5F7;--card:#fff;--ink:#0A0C10;--mut:#5B616B;--line:#E2E5EA;--ti:#3D6BFF;--ok:#15803D;--warn:#B45309;--bad:#B42318;
+  --d:'Archivo',Impact,sans-serif;--b:'Hanken Grotesk',system-ui,sans-serif}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--b);font-size:15px;line-height:1.5}
+.top{background:var(--ink);color:#fff;padding:14px 18px;display:flex;justify-content:space-between;align-items:center;position:sticky;top:0;z-index:5}
+.top b{font-family:var(--d);font-weight:900;letter-spacing:.04em;font-size:18px}
+.top button{background:none;border:1px solid rgba(255,255,255,.3);color:#fff;border-radius:6px;padding:7px 12px;font:inherit;font-size:13px;cursor:pointer}
+.w{max-width:760px;margin:0 auto;padding:18px 16px 60px}
+h2{font-family:var(--d);font-weight:900;text-transform:uppercase;font-size:22px;margin:22px 0 10px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:8px;padding:16px}
+.login{max-width:380px;margin:12vh auto 0}
+.login h1{font-family:var(--d);font-weight:900;text-transform:uppercase;font-size:28px;margin:0 0 6px}
+input[type=password]{width:100%;height:48px;border:1px solid var(--line);border-radius:6px;padding:0 12px;font:inherit;font-size:16px;margin:12px 0}
+.btn{display:inline-flex;align-items:center;justify-content:center;height:44px;padding:0 18px;border-radius:6px;border:1px solid var(--ink);background:var(--ink);color:#fff;font:inherit;font-weight:600;cursor:pointer;text-decoration:none}
+.btn.o{background:#fff;color:var(--ink)}
+.btn.full{width:100%}
+.err{color:var(--bad);font-size:13px;min-height:18px;margin:0}
+.srow{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:10px 0;border-bottom:1px solid var(--line);flex-wrap:wrap}
+.srow:last-child{border-bottom:0}
+.srow b{font-weight:600}
+.tog{display:flex;gap:6px;flex-wrap:wrap}
+.tog button{height:38px;padding:0 12px;border-radius:6px;border:1px solid var(--line);background:#fff;font:inherit;font-size:13px;font-weight:600;cursor:pointer}
+.tog button.in{border-color:var(--ok);color:var(--ok)}
+.tog button.out{border-color:var(--bad);color:var(--bad);background:#FEF3F2}
+.hint{color:var(--mut);font-size:13px;margin:8px 0 0}
+.saved{color:var(--ok);font-size:13px;font-weight:600}
+.filters{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:10px}
+.filters button{height:34px;padding:0 12px;border-radius:6px;border:1px solid var(--line);background:#fff;font:inherit;font-size:13px;cursor:pointer}
+.filters button[aria-pressed=true]{border-color:var(--ink);font-weight:700}
+.ord{margin-bottom:10px}
+.oh{display:flex;justify-content:space-between;gap:10px;align-items:baseline;flex-wrap:wrap}
+.oh b{font-family:var(--d);font-weight:900;font-size:18px}
+.st{font-weight:700;font-size:13px;text-transform:uppercase;letter-spacing:.06em}
+.st.new{color:var(--ti)}.st.confirmed{color:var(--warn)}.st.done{color:var(--ok)}.st.cancelled{color:var(--mut)}
+.meta{color:var(--mut);font-size:13px}
+.items{margin:10px 0;padding:0;list-style:none;border-top:1px solid var(--line)}
+.items li{display:flex;justify-content:space-between;gap:10px;padding:6px 0;border-bottom:1px solid var(--line);font-size:14px}
+.items li.deal{color:var(--ti)}
+.items li.total{font-weight:700;font-size:16px;border-bottom:0}
+.who{display:grid;gap:2px;font-size:14px}
+.who a{color:var(--ti)}
+.acts{display:flex;gap:6px;flex-wrap:wrap;margin-top:12px}
+.acts .btn{height:38px;font-size:13px;padding:0 12px}
+.wa{background:#15803D;border-color:#15803D}
+.empty{color:var(--mut);text-align:center;padding:30px 0}
+</style>
+</head>
+<body>
+<div id="login" class="w login">
+  <div class="card">
+    <h1>NOVA.EMOTO</h1>
+    <p class="meta">Orders and stock. Enter your password.</p>
+    <form id="lf"><input id="pw" type="password" autocomplete="current-password" placeholder="Password" required><p class="err" id="lerr"></p><button class="btn full" type="submit">Log in</button></form>
+  </div>
+</div>
+
+<div id="app" hidden>
+  <div class="top"><b>NOVA.EMOTO</b><span><button id="refresh" type="button">Refresh</button> <button id="logout" type="button">Log out</button></span></div>
+  <div class="w">
+    <h2>Stock</h2>
+    <div class="card">
+      <div id="stock"></div>
+      <p class="hint">Tap to switch between <b style="color:var(--ok)">In stock</b> and <b style="color:var(--bad)">Sold out</b>. Sold-out finishes can't be ordered on the website. <span class="saved" id="saved"></span></p>
+    </div>
+    <h2>Orders</h2>
+    <div class="filters" id="filters">
+      <button type="button" data-f="open" aria-pressed="true">To do</button>
+      <button type="button" data-f="all" aria-pressed="false">All</button>
+      <button type="button" data-f="done" aria-pressed="false">Done</button>
+    </div>
+    <div id="orders"><p class="empty">Loading…</p></div>
+  </div>
+</div>
+
+<script>
+(function(){
+  "use strict";
+  var $ = function(id){ return document.getElementById(id); };
+  var KEY = "";
+  try { KEY = sessionStorage.getItem("nova_admin") || ""; } catch(e){}
+  var NAMES = { pegs:"Prickly Foot Pegs", plate:"Vented Plate", locks:"Shift Locks" }, COLORS = { black:"Black", silver:"Silver" };
+  var stock = null, orders = [], filter = "open";
+  var money = function(n){ return "AED " + Number(n).toLocaleString("en-US"); };
+  var esc = function(s){ return String(s == null ? "" : s).replace(/[&<>"']/g, function(c){ return { "&":"&amp;", "<":"&lt;", ">":"&gt;", '"':"&quot;", "'":"&#39;" }[c]; }); };
+
+  function api(path, opts){
+    opts = opts || {}; opts.headers = Object.assign({ "x-admin-key": KEY, "content-type":"application/json" }, opts.headers || {});
+    return fetch(path, opts).then(function(r){ if (r.status === 401){ logout("Wrong password."); throw new Error("401"); } return r.json(); });
+  }
+  function logout(msg){ KEY = ""; try { sessionStorage.removeItem("nova_admin"); } catch(e){} $("app").hidden = true; $("login").hidden = false; $("lerr").textContent = msg || ""; }
+
+  $("lf").addEventListener("submit", function(e){
+    e.preventDefault(); KEY = $("pw").value; $("lerr").textContent = "";
+    api("/api/orders").then(function(d){ try { sessionStorage.setItem("nova_admin", KEY); } catch(e){} start(d); }).catch(function(){});
+  });
+  $("logout").addEventListener("click", function(){ logout(""); });
+  $("refresh").addEventListener("click", load);
+
+  function getStock(){ return fetch("/api/stock", { cache:"no-store" }).then(function(r){ return r.json(); }).then(function(s){ stock = s; drawStock(); }); }
+  function start(d){ $("login").hidden = true; $("app").hidden = false; orders = d.orders || []; drawOrders(); getStock(); }
+  function load(){ api("/api/orders").then(function(d){ orders = d.orders || []; drawOrders(); }).catch(function(){}); getStock(); }
+
+  function drawStock(){
+    $("stock").innerHTML = Object.keys(NAMES).map(function(id){
+      return '<div class="srow"><b>' + NAMES[id] + '</b><div class="tog">' + Object.keys(COLORS).map(function(c){
+        var on = stock[id][c] !== false;
+        return '<button type="button" class="' + (on ? "in" : "out") + '" data-id="' + id + '" data-c="' + c + '">' + COLORS[c] + ': ' + (on ? "In stock" : "Sold out") + '</button>';
+      }).join("") + '</div></div>';
+    }).join("");
+  }
+  $("stock").addEventListener("click", function(e){
+    var b = e.target.closest("button[data-id]"); if (!b) return;
+    stock[b.dataset.id][b.dataset.c] = !(stock[b.dataset.id][b.dataset.c] !== false);
+    drawStock(); $("saved").textContent = "Saving…";
+    api("/api/stock", { method:"POST", body: JSON.stringify({ stock: stock }) }).then(function(s){ stock = s; drawStock(); $("saved").textContent = "Saved ✓"; setTimeout(function(){ $("saved").textContent = ""; }, 2000); }).catch(function(){ $("saved").textContent = "Couldn't save, try again."; });
+  });
+
+  $("filters").addEventListener("click", function(e){
+    var b = e.target.closest("button[data-f]"); if (!b) return; filter = b.dataset.f;
+    this.querySelectorAll("button").forEach(function(x){ x.setAttribute("aria-pressed", String(x === b)); }); drawOrders();
+  });
+  function drawOrders(){
+    var list = orders.filter(function(o){ return filter === "all" ? true : filter === "done" ? (o.status === "done" || o.status === "cancelled") : (o.status === "new" || o.status === "confirmed"); });
+    if (!list.length){ $("orders").innerHTML = '<p class="empty">' + (filter === "open" ? "No orders waiting. New ones show up here." : "Nothing here yet.") + '</p>'; return; }
+    $("orders").innerHTML = list.map(function(o){
+      var when = new Date(o.createdAt).toLocaleString("en-GB", { timeZone:"Asia/Dubai", day:"numeric", month:"short", hour:"2-digit", minute:"2-digit" });
+      var addr = o.method === "delivery" && o.address ? esc(o.address.unit) + ", " + esc(o.address.bld) + ", " + esc(o.address.street) + ", " + esc(o.address.area) + (o.address.land ? " · " + esc(o.address.land) : "") : "Collection";
+      var wa = "https://wa.me/971" + encodeURIComponent(o.customer.phone) + "?text=" + encodeURIComponent("Hi " + o.customer.name + ", thanks for your NOVA.EMOTO order " + o.ref + " (" + money(o.total) + "). ");
+      return '<div class="card ord">' +
+        '<div class="oh"><b>' + esc(o.ref) + '</b><span class="st ' + esc(o.status) + '">' + esc(o.status) + '</span></div>' +
+        '<div class="meta">' + when + ' · ' + (o.method === "delivery" ? "Delivery" : "Collection") + '</div>' +
+        '<ul class="items">' + o.lines.map(function(l){ return '<li><span>' + l.q + ' × ' + esc(l.name) + ' (' + esc(l.finish) + ')</span><span>' + money(l.total) + '</span></li>'; }).join("") +
+          '<li><span>1 × NOVA keychain</span><span>Free</span></li>' +
+          o.deals.map(function(d){ return '<li class="deal"><span>Deal: ' + esc(d.t) + (d.n > 1 ? " ×" + d.n : "") + '</span><span>−' + money(d.save) + '</span></li>'; }).join("") +
+          '<li><span>Delivery</span><span>' + (o.fee ? money(o.fee) : "Free") + '</span></li>' +
+          '<li class="total"><span>Total</span><span>' + money(o.total) + '</span></li></ul>' +
+        '<div class="who"><span><b>' + esc(o.customer.name) + '</b></span><span>+971 ' + esc(o.customer.phone) + ' · ' + esc(o.customer.email) + '</span><span>' + addr + '</span>' + (o.note ? '<span>Note: ' + esc(o.note) + '</span>' : '') + '</div>' +
+        '<div class="acts"><a class="btn wa" href="' + wa + '" target="_blank" rel="noopener">WhatsApp customer</a>' +
+          (o.status === "new" ? '<button class="btn o" type="button" data-k="' + esc(o.key) + '" data-s="confirmed">Mark confirmed</button>' : '') +
+          (o.status !== "done" && o.status !== "cancelled" ? '<button class="btn o" type="button" data-k="' + esc(o.key) + '" data-s="done">Mark done</button><button class="btn o" type="button" data-k="' + esc(o.key) + '" data-s="cancelled">Cancel</button>' : '<button class="btn o" type="button" data-k="' + esc(o.key) + '" data-s="new">Reopen</button>') +
+        '</div></div>';
+    }).join("");
+  }
+  $("orders").addEventListener("click", function(e){
+    var b = e.target.closest("button[data-k]"); if (!b) return; b.disabled = true;
+    api("/api/orders", { method:"POST", body: JSON.stringify({ key: b.dataset.k, status: b.dataset.s }) }).then(function(){
+      orders.forEach(function(o){ if (o.key === b.dataset.k) o.status = b.dataset.s; }); drawOrders();
+    }).catch(function(){ b.disabled = false; });
+  });
+
+  if (KEY) api("/api/orders").then(start).catch(function(){});
+  setInterval(function(){ if (KEY && !$("app").hidden) load(); }, 60000);
+})();
+</script>
+</body>
+</html>
